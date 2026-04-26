@@ -7,7 +7,7 @@
                 <p class="text-gray-500 font-mono text-sm mt-2">Accès vendeur : {{ Auth::user()?->name ?? 'Invité' }}</p>
             </div>
 
-            <form action="{{ route('vendor.publish') }}" method="POST" class="space-y-6 bg-gray-900/50 p-8 rounded-[2rem] border border-gray-800 backdrop-blur-xl">
+            <form action="{{ route('vendor.publish') }}" method="POST" class="space-y-6 bg-gray-900/50 p-8 rounded-[2rem] border border-gray-800 backdrop-blur-xl" enctype="multipart/form-data">
                 @csrf
 
                 <div>
@@ -37,8 +37,13 @@
                 </div>
 
                 <div>
-                    <label class="block font-mono text-xs text-cyan-500 uppercase mb-2">Lien de l'image (URL)</label>
-                    <input type="url" name="image" required class="w-full bg-gray-950 border-gray-800 rounded-xl focus:border-cyan-500 text-white" placeholder="https://images.unsplash.com/...">
+                    {{-- <label class="block font-mono text-xs text-cyan-500 uppercase mb-2">Lien de l'image (URL)</label>
+                    <input type="url" name="image" required class="w-full bg-gray-950 border-gray-800 rounded-xl focus:border-cyan-500 text-white" placeholder="https://images.unsplash.com/..."> --}}
+                    <label class="block font-mono text-xs text-cyan-500 uppercase mb-2">
+                        Image du produit
+                    </label>
+                    <input type="file" name="image" accept="image/*" required
+                        class="w-full bg-gray-950 border-gray-800 rounded-xl focus:border-cyan-500 text-white">
                 </div>
 
                 <button type="submit" class="w-full bg-yellow-500 text-gray-950 py-4 rounded-2xl font-black text-lg shadow-[0_0_20px_rgba(234,179,8,0.3)] hover:shadow-[0_0_40px_rgba(234,179,8,0.5)] transition-all transform hover:scale-[1.01] active:scale-95">

@@ -21,13 +21,24 @@ class VendorController extends Controller
 
     public function store(Request $request)
     {
+        // $request->validate([
+        //     'name' => 'required|max:255',
+        //     'description' => 'required',
+        //     'price' => 'required|numeric',
+        //     'category_id' => 'required|exists:categories,id',
+        //     'image' => 'required|url',
+        // ]);
+        
         $request->validate([
             'name' => 'required|max:255',
             'description' => 'required',
             'price' => 'required|numeric',
             'category_id' => 'required|exists:categories,id',
-            'image' => 'required|url', // On garde l'URL pour simplifier, ou on gérera l'upload plus tard
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp',
         ]);
+
+        // Upload de l'image dans storage/app/public/products
+        $path = $request->file('image')->store('products', 'public');
 
         Product::create([
             'name' => $request->name,
@@ -35,7 +46,7 @@ class VendorController extends Controller
             'description' => $request->description,
             'price' => $request->price,
             'category_id' => $request->category_id,
-            'image' => $request->image,
+            'image' => $path,
             'stock' => 1, // Par défaut
         ]);
 

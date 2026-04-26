@@ -22,7 +22,7 @@
                 <div class="group bg-gray-900 rounded-3xl overflow-hidden shadow-lg hover:shadow-cyan-900/50 transition-all duration-500 transform hover:-translate-y-2 border border-gray-800 hover:border-cyan-500/50">
                     
                     <div class="overflow-hidden h-60 relative">
-                        <img src="{{ $product->image }}" 
+                        <img src="{{ asset('storage/' . $product->image) }}" 
                              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                              alt="{{ $product->name }}">
                         <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
