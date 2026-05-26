@@ -12,22 +12,13 @@ class VendorController extends Controller
 {
     public function create()
     {
-        // On récupère toutes les catégories existantes
         $categories = \App\Models\Category::all(); 
 
-        // On les passe à la vue via compact()
         return view('pages.sell', compact('categories'));
     }
 
     public function store(Request $request)
     {
-        // $request->validate([
-        //     'name' => 'required|max:255',
-        //     'description' => 'required',
-        //     'price' => 'required|numeric',
-        //     'category_id' => 'required|exists:categories,id',
-        //     'image' => 'required|url',
-        // ]);
         
         $request->validate([
             'name' => 'required|max:255',
