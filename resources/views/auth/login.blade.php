@@ -1,68 +1,85 @@
 <x-guest-layout>
     <x-auth-session-status class="mb-4" :status="session('status')" />
-        <div class="flex flex-col items-center mb-10">
-        <div class="relative w-28 h-28 mb-4">
-            <div class="absolute inset-0 bg-blue-600/30 blur-2xl rounded-full"></div>
-            <svg viewBox="0 0 100 100" class="relative text-blue-500 drop-shadow-[0_0_20px_rgba(59,130,246,0.6)]">
-                <path d="M25,20 C25,10 75,10 75,20" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round"/>
-                <path d="M15,30 L85,30 L75,80 L25,80 Z" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
-                <line x1="35" y1="30" x2="40" y2="80" stroke="currentColor" stroke-width="3"/>
-                <line x1="65" y1="30" x2="60" y2="80" stroke="currentColor" stroke-width="3"/>
-                <circle cx="50" cy="55" r="8" fill="currentColor" class="animate-pulse"/>
-            </svg>
+
+    {{-- Logo --}}
+    <div class="flex flex-col items-center mb-8">
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg mb-4"
+             style="background: linear-gradient(135deg, #F4A429, #E07B2A)">
+            <span class="text-white font-black text-3xl">G</span>
         </div>
-        <h2 class="text-3xl font-black text-white uppercase tracking-[0.2em]">
-            <span class="text-blue-500 text-shadow-blue">DirToi</span>
+        <h2 class="text-2xl font-black" style="font-family: 'Playfair Display', serif; color: #F4A429">
+            GasyMarket
         </h2>
-        <div class="h-1 w-20 bg-blue-600 mt-2 rounded-full shadow-[0_0_10px_#2563eb]"></div>
+        <p class="text-sm mt-1" style="color: rgba(253,246,236,0.5)">
+            🇲🇬 La marketplace malgache
+        </p>
     </div>
 
-    <style>
-        .text-shadow-blue {
-            text-shadow: 0 0 15px rgba(37, 99, 235, 0.6);
-        }
-    </style>
+    {{-- Message d'erreur session --}}
+    @if(session('error'))
+        <div class="mb-4 p-4 rounded-xl text-sm"
+            style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #f87171">
+            {{ session('error') }}
+        </div>
+    @endif
 
-    <form method="POST" action="{{ route('login') }}" class="space-y-6">
+    {{-- Formulaire --}}
+    <form method="POST" action="{{ route('login') }}" class="space-y-5">
         @csrf
 
+        {{-- Email --}}
         <div>
-            <label class="block font-mono text-xs text-cyan-500 uppercase mb-2">Identifiant Réseau</label>
-            <input id="email" type="email" name="email" :value="old('email')" required autofocus 
-                   class="w-full bg-gray-950/50 border-gray-800 rounded-xl focus:border-cyan-500 focus:ring-cyan-500 text-white placeholder-gray-600 shadow-inner"
-                   placeholder="nom@exemple.mg">
+            <label class="block text-xs font-bold uppercase mb-2" style="color: rgba(244,164,41,0.8)">
+                Adresse email
+            </label>
+            <input id="email" type="email" name="email" value="{{ old('email') }}"
+                   required autofocus placeholder="nom@exemple.mg"
+                   class="w-full rounded-xl px-4 py-3 text-white text-sm focus:outline-none"
+                   style="background: rgba(255,255,255,0.08); border: 1px solid rgba(244,164,41,0.2)">
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
+        {{-- Mot de passe --}}
         <div>
-            <label class="block font-mono text-xs text-cyan-500 uppercase mb-2">Code d'accès</label>
-            <input id="password" type="password" name="password" required autocomplete="current-password"
-                   class="w-full bg-gray-950/50 border-gray-800 rounded-xl focus:border-cyan-500 focus:ring-cyan-500 text-white shadow-inner"
-                   placeholder="••••••••">
+            <label class="block text-xs font-bold uppercase mb-2" style="color: rgba(244,164,41,0.8)">
+                Mot de passe
+            </label>
+            <input id="password" type="password" name="password"
+                   required autocomplete="current-password" placeholder="••••••••"
+                   class="w-full rounded-xl px-4 py-3 text-white text-sm focus:outline-none"
+                   style="background: rgba(255,255,255,0.08); border: 1px solid rgba(244,164,41,0.2)">
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
+        {{-- Se souvenir + mot de passe oublié --}}
         <div class="flex items-center justify-between">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded bg-gray-900 border-gray-800 text-cyan-500 focus:ring-cyan-500" name="remember">
-                <span class="ml-2 text-sm text-gray-400 font-medium">Maintenir la liaison</span>
+            <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" name="remember"
+                       class="rounded" style="accent-color: #F4A429">
+                <span class="text-sm" style="color: rgba(253,246,236,0.6)">Se souvenir</span>
             </label>
             @if (Route::has('password.request'))
-                <a class="text-sm text-gray-500 hover:text-cyan-400 transition-colors" href="{{ route('password.request') }}">
-                    Code oublié ?
+                <a href="{{ route('password.request') }}"
+                   class="text-sm hover:underline transition" style="color: rgba(244,164,41,0.7)">
+                    Mot de passe oublié ?
                 </a>
             @endif
         </div>
 
-        <div class="pt-4">
-            <button class="w-full bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-black py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] transform active:scale-95 uppercase tracking-widest">
-                Initialiser Connexion
-            </button>
-        </div>
+        {{-- Bouton connexion --}}
+        <button type="submit"
+                class="w-full py-4 rounded-xl font-black text-sm uppercase tracking-widest transition-all active:scale-95"
+                style="background: #F4A429; color: #2C1A0E">
+            Se connecter
+        </button>
 
-        <p class="text-center text-gray-500 text-xs mt-6">
-            Pas encore de terminal ? 
-            <a href="{{ route('register') }}" class="text-cyan-500 hover:underline">Créer un compte</a>
+        {{-- Lien inscription --}}
+        <p class="text-center text-sm" style="color: rgba(253,246,236,0.5)">
+            Pas encore de compte ?
+            <a href="{{ route('register') }}"
+               class="font-bold hover:underline" style="color: #F4A429">
+                S'inscrire gratuitement
+            </a>
         </p>
     </form>
 </x-guest-layout>

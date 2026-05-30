@@ -1,28 +1,53 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>DirToi - Authentification</title>
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans antialiased bg-gray-950 text-gray-100">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-[url('https://source.unsplash.com/featured/?cyberpunk,grid')] bg-cover bg-center">
-            <div class="absolute inset-0 bg-gray-950/80 backdrop-blur-sm"></div>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>GasyMarket — Authentification</title>
 
-            <div class="relative z-10 text-center mb-8">
-                <a href="/" class="text-5xl font-black tracking-tighter text-white">
-                    DIR<span class="text-cyan-500">TOI</span>
-                </a>
-                <p class="text-cyan-500/50 font-mono text-xs mt-2 uppercase tracking-[0.3em]">Secure Access Terminal</p>
-            </div>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-            <div class="relative z-10 w-full sm:max-w-md mt-6 px-8 py-10 bg-gray-900/40 backdrop-blur-xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] sm:rounded-[2rem]">
-                <div class="absolute -top-px left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
-                
-                {{ $slot }}
-            </div>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background:
+                linear-gradient(
+                    to bottom,
+                    rgba(44, 26, 14, 0.88) 0%,
+                    rgba(44, 26, 14, 0.78) 50%,
+                    rgba(44, 26, 14, 0.92) 100%
+                ),
+                url('/images/baobab-sunset.jpg') center/cover fixed;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen px-4 py-12">
+
+    {{-- Logo --}}
+    <a href="{{ route('home') }}" class="flex items-center gap-3 mb-8">
+        <div class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg"
+             style="background: linear-gradient(135deg, #F4A429, #E07B2A)">
+            <span class="text-white font-black text-2xl">G</span>
         </div>
-    </body>
+        <span class="font-black text-3xl" style="font-family: 'Playfair Display', serif;">
+            <span style="color: #F4A429">Gasy</span><span class="text-white">Market</span>
+        </span>
+    </a>
+
+    {{-- Carte formulaire --}}
+    <div class="w-full max-w-md rounded-2xl p-8 shadow-2xl"
+         style="background: rgba(44, 26, 14, 0.9); border: 1px solid rgba(244, 164, 41, 0.2);">
+        {{ $slot }}
+    </div>
+
+    {{-- Tagline --}}
+    <p class="mt-6 text-sm" style="color: rgba(244, 164, 41, 0.5)">
+        🇲🇬 La marketplace 100% malgache
+    </p>
+
+</body>
 </html>

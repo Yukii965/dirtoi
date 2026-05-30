@@ -25,7 +25,7 @@
         <p>Merci d'avoir choisi le futur de l'e-commerce à Madagascar.</p>
         
         <div class="footer">
-            © 2026 DirToi Security. Données cryptées de bout en bout.
+            © 2026 GasyMarket. Données cryptées de bout en bout.
         </div>
     </div>
 </body>

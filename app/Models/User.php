@@ -2,36 +2,94 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Order;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * Relation avec les commandes
-     */
-    public function orders()
+    // Tous les champs qu'on autorise à remplir lors de la création
+    // ou modification d'un utilisateur
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
+        'mvola_number',
+        'company_name',
+        'status',
+        'avatar',
+    ];
+
+    // Champs cachés — jamais envoyés au navigateur
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    // -------------------------------------------------------
+    // MÉTHODES UTILES pour vérifier le rôle de l'utilisateur
+    // Exemple d'utilisation : if(auth()->user()->isAdmin()) ...
+    // -------------------------------------------------------
+
+    // Vérifie si l'utilisateur est un admin
+    public function isAdmin(): bool
     {
-        return $this->hasMany(Order::class)
-                    ->orderBy('created_at', 'desc');
+        return $this->role === 'admin';
     }
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    // Vérifie si l'utilisateur est un acheteur
+    public function isAcheteur(): bool
+    {
+        return $this->role === 'acheteur';
+    }
+
+    // Vérifie si l'utilisateur est un vendeur amateur (particulier)
+    public function isVendeurAmateur(): bool
+    {
+        return $this->role === 'vendeur_amateur';
+    }
+
+    // Vérifie si l'utilisateur est un vendeur pro (entreprise)
+    public function isVendeurPro(): bool
+    {
+        return $this->role === 'vendeur_pro';
+    }
+
+    // Vérifie si l'utilisateur est un vendeur (amateur OU pro)
+    public function isVendeur(): bool
+    {
+        return in_array($this->role, ['vendeur_amateur', 'vendeur_pro']);
+    }
+
+    // -------------------------------------------------------
+    // RELATIONS avec les autres tables
+    // -------------------------------------------------------
+
+    // Un utilisateur peut avoir plusieurs commandes (en tant qu'acheteur)
+    public function orders()
+    {
+        return $this->hasMany(Order::class)->orderBy('created_at', 'desc');
+    }
+
+    // Un vendeur peut avoir plusieurs produits
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    // Un vendeur pro peut avoir plusieurs abonnements
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    // -------------------------------------------------------
+    // CAST — convertit automatiquement certains champs
+    // -------------------------------------------------------
     protected function casts(): array
     {
         return [

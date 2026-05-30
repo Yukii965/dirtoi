@@ -53,7 +53,7 @@
             
             setTimeout(() => {
                 let response = 'Commande non reconnue. Synchronisation en cours.';
-                if(input.includes('prix')) response = 'Les tarifs sont indexés en temps réel sur DirToi.';
+                if(input.includes('prix')) response = 'Les tarifs sont indexés en temps réel sur GasyMarket.';
                 if(input.includes('merci')) response = 'À votre service, Citoyen.';
                 if(input.includes('aide')) response = 'Je peux surveiller vos transactions et vos stocks.';
                 

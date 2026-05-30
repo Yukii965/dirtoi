@@ -19,7 +19,8 @@ class OrderConfirmed extends Mailable
 
     public function build()
     {
-        return $this->subject('Confirmation de votre commande - DirToi')
+        // Sujet de l'email envoyé automatiquement après une commande
+        return $this->subject('Confirmation de votre commande - GasyMarket')
                     ->view('emails.order_confirmed');
     }
 }

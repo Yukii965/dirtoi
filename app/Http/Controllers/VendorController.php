@@ -12,35 +12,53 @@ class VendorController extends Controller
 {
     public function create()
     {
-        $categories = \App\Models\Category::all(); 
+        // Vérifie que l'utilisateur connecté est bien un vendeur
+        if (!Auth::check() || !Auth::user()->isVendeur()) {
+            return redirect()->route('home')
+                ->with('error', 'Accès réservé aux vendeurs.');
+        }
 
+        $categories = Category::all();
         return view('pages.sell', compact('categories'));
     }
 
     public function store(Request $request)
     {
-        
+        // Vérifie que l'utilisateur connecté est bien un vendeur
+        if (!Auth::check() || !Auth::user()->isVendeur()) {
+            return redirect()->route('home')
+                ->with('error', 'Accès réservé aux vendeurs.');
+        }
+
         $request->validate([
-            'name' => 'required|max:255',
+            'name'        => 'required|max:255',
             'description' => 'required',
-            'price' => 'required|numeric',
+            'price'       => 'required|numeric',
             'category_id' => 'required|exists:categories,id',
-            'image' => 'required|image|mimes:jpg,jpeg,png,webp',
+            'image'       => 'required|image|mimes:jpg,jpeg,png,webp',
         ]);
 
-        // Upload de l'image dans storage/app/public/products
+        // Upload de l'image
         $path = $request->file('image')->store('products', 'public');
 
+        // Création du produit avec tous les champs
         Product::create([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name) . '-' . rand(100, 999),
-            'description' => $request->description,
-            'price' => $request->price,
-            'category_id' => $request->category_id,
-            'image' => $path,
-            'stock' => 1, // Par défaut
+            'name'           => $request->name,
+            'slug'           => Str::slug($request->name) . '-' . rand(100, 999),
+            'description'    => $request->description,
+            'price'          => $request->price,
+            'category_id'    => $request->category_id,
+            'image'          => $path,
+            'stock' => $request->stock,
+
+            // Le vendeur propriétaire du produit
+            'user_id'        => Auth::id(),
+
+            // En attente de validation par un admin
+            'product_status' => 'en_attente',
         ]);
 
-        return redirect()->route('home')->with('success', 'Votre produit est maintenant en ligne sur le réseau DirToi !');
+        return redirect()->route('dashboard')
+            ->with('success', 'Produit soumis ! Il sera visible après validation.');
     }
 }

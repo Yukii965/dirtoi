@@ -9,11 +9,6 @@ class Product extends Model
 {
     use HasFactory;
 
-    /**
-     * Les attributs qui peuvent être assignés en masse.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'slug',
@@ -22,11 +17,22 @@ class Product extends Model
         'image',
         'category_id',
         'stock',
+
+        // Champs ajoutés pour GasyMarket
+        // Sans ces deux lignes Laravel refusait de les sauvegarder !
+        'user_id',
+        'product_status',
     ];
 
-    // Si tu as des relations, elles restent ici...
+    // Un produit appartient à une catégorie
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    // Un produit appartient à un vendeur
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

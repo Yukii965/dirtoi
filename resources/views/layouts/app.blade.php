@@ -1,68 +1,129 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>GasyMarket — {{ config('app.name') }}</title>
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    {{-- Police Google Fonts — style malgache chaleureux --}}
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        
-    </head>
+    <style>
+        /* Variables de couleurs GasyMarket */
+        :root {
+            --baobab-dark:   #2C1A0E;
+            --baobab-brown:  #5C3317;
+            --baobab-light:  #8B5E3C;
+            --sunset-yellow: #F4A429;
+            --sunset-orange: #E07B2A;
+            --cream:         #FDF6EC;
+            --cream-dark:    #F5E6D0;
+        }
+
+        body {
+            background-color: var(--baobab-dark);
+            color: var(--cream);
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Background baobab sur toutes les pages */
+        .gasy-bg {
+            background:
+                linear-gradient(
+                    to bottom,
+                    rgba(44, 26, 14, 0.85) 0%,
+                    rgba(44, 26, 14, 0.75) 50%,
+                    rgba(44, 26, 14, 0.90) 100%
+                ),
+                url('/images/baobab-sunset.jpg') center/cover fixed;
+            min-height: 100vh;
+        }
+
+        /* Titre style GasyMarket */
+        .gasy-title {
+            font-family: 'Playfair Display', serif;
+            color: var(--sunset-yellow);
+        }
+
+        /* Bouton principal */
+        .btn-gasy {
+            background: var(--sunset-yellow);
+            color: var(--baobab-dark);
+            font-weight: 700;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            transition: all 0.2s;
+        }
+        .btn-gasy:hover {
+            background: var(--sunset-orange);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(244, 164, 41, 0.3);
+        }
+
+        /* Carte produit */
+        .gasy-card {
+            background: rgba(92, 51, 23, 0.4);
+            border: 1px solid rgba(244, 164, 41, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            transition: all 0.2s;
+        }
+        .gasy-card:hover {
+            border-color: rgba(244, 164, 41, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        }
+
+        /* Navbar */
+        .gasy-nav {
+            background: rgba(44, 26, 14, 0.95);
+            border-bottom: 1px solid rgba(244, 164, 41, 0.2);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="gasy-bg">
+
+    {{-- Navigation --}}
+    @include('layouts.navigation')
+
+    {{-- Message de succès --}}
     @if(session('success'))
-        <div class="max-w-7xl mx-auto mt-4 px-4 sm:px-6 lg:px-8">
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
-                {{ session('success') }}
-            </div>
+        <div class="fixed top-20 right-4 z-50 bg-green-500/90 text-white px-6 py-3 rounded-xl shadow-lg backdrop-blur"
+             x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)">
+            ✅ {{ session('success') }}
         </div>
     @endif
-    <svg viewBox="0 0 200 200" xmlns='http://www.w3.org/2000/svg' class="fixed inset-0 w-full h-full opacity-[0.03] pointer-events-none z-50">
-        <filter id='noiseFilter'>
-            <feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/>
-        </filter>
-        <rect width='100%' height='100%' filter='url(#noiseFilter)'/>
-    </svg>
-    <body class="font-sans antialiased bg-gray-950 text-gray-100 overflow-x-hidden">
-        <div class="fixed inset-0 -z-10 overflow-hidden">
-            <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#0f172a,#020617)]"></div>
-            
-            <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-500/10 blur-[120px] animate-pulse"></div>
-            <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-yellow-500/10 blur-[120px] animate-pulse" style="animation-delay: 2s;"></div>
 
-            <div class="absolute inset-0 opacity-20" 
-                style="background-image: linear-gradient(#1e293b 1px, transparent 1px), linear-gradient(90deg, #1e293b 1px, transparent 1px); background-size: 50px 50px; transform: perspective(500px) rotateX(60deg) translateY(-100px); background-repeat: repeat; animation: grid-move 20s linear infinite;">
-            </div>
+    {{-- Message d'erreur --}}
+    @if(session('error'))
+        <div class="fixed top-20 right-4 z-50 bg-red-500/90 text-white px-6 py-3 rounded-xl shadow-lg backdrop-blur"
+             x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)">
+            ⚠️ {{ session('error') }}
         </div>
+    @endif
 
-        <style>
-            @keyframes grid-move {
-                0% { background-position: 0 0; }
-                100% { background-position: 0 50px; }
-            }
-        </style>
+    {{-- Contenu principal --}}
+    <main>
+        {{ $slot }}
+    </main>
 
-        <div class="min-h-screen relative z-10">
-            @include('layouts.navigation')
-            <main class="relative z-10">
-                {{ $slot }}
-            </main>
-
-            @include('components.ia-zero')
-        </div>
-    </body>
-    <footer class="bg-gray-900 text-gray-400 py-12 mt-12">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <p>&copy; 2026 DirToi - Développé avec Laravel.</p>
-            <div class="mt-4 space-x-4">
-                <a href="#" class="hover:text-white">Conditions</a>
-                <a href="#" class="hover:text-white">Aide</a>
-            </div>
+    {{-- Footer --}}
+    <footer class="mt-16 border-t border-yellow-900/30 py-8 text-center">
+        <p class="text-yellow-600/60 text-sm">
+            &copy; 2026 GasyMarket — La marketplace malgache 🇲🇬
+        </p>
+        <div class="mt-2 flex justify-center gap-4 text-xs text-yellow-700/50">
+            <a href="#" class="hover:text-yellow-500 transition">Conditions</a>
+            <a href="{{ route('nav.help') }}" class="hover:text-yellow-500 transition">Aide</a>
         </div>
     </footer>
+
+    {{-- Chatbot IA --}}
+    @include('components.ia-zero')
+
+</body>
 </html>

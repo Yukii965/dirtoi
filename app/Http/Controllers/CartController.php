@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 class CartController extends Controller
 {
     public function add(Request $request, $id) {
+        // Vérifie que c'est bien un acheteur
+        if (auth()->check() && !auth()->user()->isAcheteur()) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Le panier est réservé aux acheteurs.');
+        }
         $product = \App\Models\Product::findOrFail($id);
         $cart = session()->get('cart', []);
 
@@ -25,12 +30,22 @@ class CartController extends Controller
     }
 
     public function index() {
+        // Vérifie que c'est bien un acheteur
+        if (auth()->check() && !auth()->user()->isAcheteur()) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Le panier est réservé aux acheteurs.');
+        }
         return view('cart.index');
     }
     
     // Augmenter la quantité (+)
     public function increment($id)
     {
+        // Vérifie que c'est bien un acheteur
+        if (auth()->check() && !auth()->user()->isAcheteur()) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Le panier est réservé aux acheteurs.');
+        }
         $cart = session()->get('cart');
         if(isset($cart[$id])) {
             $cart[$id]['quantity']++;
@@ -42,6 +57,11 @@ class CartController extends Controller
     // Diminuer la quantité (-)
     public function decrement($id)
     {
+        // Vérifie que c'est bien un acheteur
+        if (auth()->check() && !auth()->user()->isAcheteur()) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Le panier est réservé aux acheteurs.');
+        }
         $cart = session()->get('cart');
         if(isset($cart[$id])) {
             if($cart[$id]['quantity'] > 1) {
@@ -57,6 +77,11 @@ class CartController extends Controller
     // Supprimer complètement un produit
     public function remove($id)
     {
+        // Vérifie que c'est bien un acheteur
+        if (auth()->check() && !auth()->user()->isAcheteur()) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Le panier est réservé aux acheteurs.');
+        }
         $cart = session()->get('cart');
         if(isset($cart[$id])) {
             unset($cart[$id]);
