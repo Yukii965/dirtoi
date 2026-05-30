@@ -14,57 +14,18 @@ class ProductController extends Controller
         $query = Product::with(['category', 'user'])
                         ->where('product_status', 'actif');
 
-        if ($request->has('search') && $request->search != null) {
+        if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('name', 'LIKE', "%{$search}%")
-                ->orWhere('description', 'LIKE', "%{$search}%");
+                  ->orWhere('description', 'LIKE', "%{$search}%");
             });
         }
 
-        // Seulement 8 produits en vedette sur l'accueil
-        $products = $query->latest()->paginate(8);
+        $products  = $query->latest()->paginate(8);
         $categories = Category::all();
 
         return view('products.index', compact('products', 'categories'));
-    }
-
-    // Page boutique complète — tous les produits avec filtres
-    public function index(Request $request)
-    {
-        $query = Product::with(['category', 'user'])
-                        ->where('product_status', 'actif');
-
-        // Filtre par catégorie
-        if ($request->has('category') && $request->category != null) {
-            $query->where('category_id', $request->category);
-        }
-
-        // Recherche
-        if ($request->has('search') && $request->search != null) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%")
-                ->orWhere('description', 'LIKE', "%{$search}%");
-            });
-        }
-
-        // Tri
-        if ($request->has('sort')) {
-            match($request->sort) {
-                'price_asc'  => $query->orderBy('price', 'asc'),
-                'price_desc' => $query->orderBy('price', 'desc'),
-                'newest'     => $query->latest(),
-                default      => $query->latest(),
-            };
-        } else {
-            $query->latest();
-        }
-
-        $products = $query->paginate(12);
-        $categories = Category::all();
-
-        return view('products.shop', compact('products', 'categories'));
     }
 
     public function show(string $slug)
@@ -85,11 +46,12 @@ class ProductController extends Controller
 
     public function filterByCategory(string $categorySlug)
     {
-        $category = Category::where('slug', $categorySlug)->firstOrFail();
-        $products = Product::where('category_id', $category->id)
-                            ->where('product_status', 'actif')
-                            ->paginate(12);
+        $category   = Category::where('slug', $categorySlug)->firstOrFail();
+        $products   = Product::where('category_id', $category->id)
+                              ->where('product_status', 'actif')
+                              ->paginate(12);
         $categories = Category::all();
+
         return view('products.index', compact('products', 'categories', 'category'));
     }
 
@@ -98,6 +60,7 @@ class ProductController extends Controller
         $products = Product::where('price', '<', 1000)
                            ->where('product_status', 'actif')
                            ->paginate(12);
+
         return view('products.index', compact('products'));
     }
 
@@ -106,6 +69,7 @@ class ProductController extends Controller
         $products = Product::orderBy('stock', 'asc')
                            ->where('product_status', 'actif')
                            ->paginate(12);
+
         return view('products.index', compact('products'));
     }
 }
