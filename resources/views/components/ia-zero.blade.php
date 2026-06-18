@@ -131,4 +131,17 @@
     @keyframes shadow { 0%, 100% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(0.6); opacity: 0.1; } }
     .animate-float { animation: float 3s ease-in-out infinite; }
     .animate-shadow { animation: shadow 3s ease-in-out infinite; }
+    @media (max-width: 480px) {
+        /* Réduit les marges du widget flottant pour qu'il reste
+        entièrement visible sur petit écran */
+        .fixed.bottom-8.right-8 {
+            bottom: 1rem !important;
+            right: 1rem !important;
+        }
+        /* La bulle de dialogue ne dépasse jamais de l'écran */
+        .fixed.bottom-8.right-8 > div:first-child {
+            max-width: calc(100vw - 2rem) !important;
+            margin-right: 0 !important;
+        }
+    }
 </style>

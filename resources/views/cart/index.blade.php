@@ -13,7 +13,7 @@
                 <div class="space-y-4 mb-6">
                     @foreach(session('cart') as $id => $details)
                         @php $total += $details['price'] * $details['quantity']; @endphp
-                        <div class="p-4 rounded-2xl flex items-center gap-4"
+                        <div id="cart-item" class="p-4 rounded-2xl flex items-center gap-4"
                              style="background: rgba(44,26,14,0.85); border: 1px solid rgba(244,164,41,0.2)">
 
                             <img src="{{ asset('storage/' . ($details['image'] ?? '')) }}"
@@ -107,4 +107,11 @@
 
         </div>
     </div>
+    <style>
+        #cart-item { flex-wrap: wrap !important; }
+        @media (max-width: 640px) {
+            #cart-item img { width: 70px !important; height: 70px !important; }
+            #cart-item .flex-1 { min-width: 150px !important; }
+        }
+    </style>
 </x-app-layout>

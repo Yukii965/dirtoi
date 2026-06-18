@@ -11,8 +11,12 @@ class ProductController extends Controller
     // Page d'accueil — produits en vedette
     public function home(Request $request)
     {
-        $query = Product::with(['category', 'user'])
-                        ->where('product_status', 'actif');
+        $query = Product::with(['category', 'user']);
+
+        // Admin voit tous les produits sans exception
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            $query->where('product_status', 'actif');
+        }
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -22,7 +26,9 @@ class ProductController extends Controller
             });
         }
 
-        $products  = $query->latest()->paginate(8);
+        // Limite à 4 produits sur l'accueil pour les non-connectés
+        $limit = auth()->check() ? 8 : 4;
+        $products = $query->latest()->paginate($limit);
         $categories = Category::all();
 
         return view('products.index', compact('products', 'categories'));

@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="py-12">
-        <div class="max-w-3xl mx-auto px-6">
+        <div style="max-width:48rem; margin:0 auto; padding:0 1.5rem;">
 
             {{-- Titre --}}
             <div class="text-center mb-10">
@@ -12,7 +12,7 @@
                 </p>
             </div>
 
-            <div class="space-y-4">
+            <div style="display:flex; flex-direction:column; gap:1.5rem;">
 
                 {{-- FAQ --}}
                 <div class="p-6 rounded-2xl" style="background: rgba(44,26,14,0.85); border: 1px solid rgba(244,164,41,0.2)">
@@ -69,4 +69,10 @@
             </div>
         </div>
     </div>
+    <style>
+        @media (max-width: 640px) {
+            .max-w-3xl { padding: 0 0.75rem !important; }
+            .p-6 { padding: 1rem !important; }
+        }
+    </style>
 </x-app-layout>

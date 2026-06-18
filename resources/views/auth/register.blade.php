@@ -69,7 +69,7 @@
             <label class="block text-xs font-bold uppercase mb-3" style="color: rgba(244,164,41,0.8)">
                 Je suis...
             </label>
-            <div class="grid grid-cols-3 gap-3">
+            <div id="role-grid">
 
                 {{-- Acheteur --}}
                 <label class="cursor-pointer">
@@ -183,4 +183,14 @@
         roleInputs.forEach(input => input.addEventListener('change', updateFields));
         updateFields();
     </script>
+    <style>
+        #role-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+        @media (max-width: 480px) {
+            #role-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </x-guest-layout>

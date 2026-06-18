@@ -1,101 +1,113 @@
 <x-app-layout>
     <div class="py-12">
-        <div class="max-w-5xl mx-auto px-6 space-y-6">
+        <div style="max-width:64rem; margin:0 auto; padding:0 1.5rem;
+                    display:flex; flex-direction:column; gap:1.5rem;">
 
-            {{-- En-tête --}}
-            <div class="text-center mb-8">
-                <h2 class="text-3xl font-black" style="font-family: 'Playfair Display', serif; color: #F4A429">
+            <div style="text-align:center; margin-bottom:0.5rem;">
+                <h2 class="text-3xl font-black"
+                    style="font-family:'Playfair Display',serif; color:#F4A429">
                     Mon espace acheteur
                 </h2>
-                <p class="mt-1" style="color: rgba(253,246,236,0.6)">
+                <p style="color:rgba(253,246,236,0.6); margin-top:0.25rem;">
                     Bienvenue, {{ auth()->user()->name }} 👋
                 </p>
             </div>
 
-            {{-- Mes commandes --}}
-            <div class="p-6 rounded-2xl" style="background: rgba(44,26,14,0.85); border: 1px solid rgba(244,164,41,0.2)">
-                <h3 class="text-lg font-bold mb-4" style="color: #F4A429">
+            <div style="padding:1.5rem; border-radius:1rem;
+                        background:rgba(44,26,14,0.85); border:1px solid rgba(244,164,41,0.2)">
+                <h3 class="text-lg font-bold" style="color:#F4A429; margin-bottom:1rem;">
                     Mes commandes récentes
                 </h3>
 
-                @php
-                    $orders = auth()->user()->orders()->latest()->take(5)->get();
-                @endphp
+                @php $orders = auth()->user()->orders()->latest()->take(5)->get(); @endphp
 
                 @if($orders->isEmpty())
-                    <div class="text-center py-8">
-                        <div class="text-4xl mb-3">🛍️</div>
-                        <p style="color: rgba(253,246,236,0.5)">Vous n'avez pas encore passé de commande.</p>
-                        <a href="{{ route('home') }}" class="mt-4 inline-block text-sm" style="color: #F4A429">
+                    <div style="text-align:center; padding:2rem;">
+                        <div style="font-size:2.5rem; margin-bottom:0.75rem;">🛍️</div>
+                        <p style="color:rgba(253,246,236,0.5)">Vous n'avez pas encore passé de commande.</p>
+                        <a href="{{ route('home') }}"
+                           style="display:inline-block; margin-top:1rem; font-size:0.875rem;
+                                  color:#F4A429; text-decoration:none;">
                             Découvrir les produits →
                         </a>
                     </div>
                 @else
-                    <table class="w-full text-sm">
-                        <thead>
-                            <tr style="border-bottom: 1px solid rgba(244,164,41,0.2)">
-                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Commande</th>
-                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Montant</th>
-                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Statut</th>
-                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Date</th>
-                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($orders as $order)
-                            <tr style="border-bottom: 1px solid rgba(244,164,41,0.1)">
-                                <td class="py-3 text-center" style="color: rgba(253,246,236,0.5)">#{{ $order->id }}</td>
-                                <td class="py-3 text-center" style="color: #F4A429">
-                                    {{ number_format($order->total_price, 0, ',', ' ') }} Ar
-                                </td>
-                                <td class="py-3 text-center">
-                                    @php
-                                        $labels = [
-                                            'en_attente_paiement' => ['En attente', 'bg-gray-500/20 text-gray-400'],
-                                            'paye_retenu'         => ['Payé 🔒', 'bg-blue-500/20 text-blue-400'],
-                                            'livraison_en_cours'  => ['En livraison 🚚', 'bg-yellow-500/20 text-yellow-400'],
-                                            'confirme_acheteur'   => ['Confirmé ✅', 'bg-purple-500/20 text-purple-400'],
-                                            'code_envoye_livreur' => ['Code envoyé', 'bg-orange-500/20 text-orange-400'],
-                                            'termine'             => ['Terminé 💰', 'bg-green-500/20 text-green-400'],
-                                            'annule'              => ['Annulé', 'bg-red-500/20 text-red-400'],
-                                            'litige'              => ['Litige ⚠️', 'bg-red-700/20 text-red-300'],
-                                        ];
-                                        [$label, $badge] = $labels[$order->status] ?? [$order->status, 'bg-gray-500/20 text-gray-400'];
-                                    @endphp
-                                    <span class="px-2 py-1 rounded-full text-xs {{ $badge }}">{{ $label }}</span>
-                                </td>
-                                <td class="py-3 text-center" style="color: rgba(253,246,236,0.5)">
-                                    {{ $order->created_at->format('d/m/Y') }}
-                                </td>
-                                <td class="py-3 text-center">
-                                    {{-- Bouton confirmer réception --}}
-                                    @if($order->status === 'livraison_en_cours')
-                                        <form method="POST" action="{{ route('order.confirm', $order->id) }}">
-                                            @csrf
-                                            <button type="submit"
-                                                class="text-xs px-3 py-1 rounded-lg font-medium"
-                                                style="background: rgba(34,197,94,0.2); color: #4ade80; border: 1px solid rgba(34,197,94,0.3)">
-                                                ✅ Confirmer réception
-                                            </button>
-                                        </form>
-                                    @elseif($order->status === 'confirme_acheteur' && $order->delivery_code)
-                                        {{-- Affiche le code à donner au livreur --}}
-                                        <div class="text-center">
-                                            <p class="text-xs mb-1" style="color: rgba(253,246,236,0.5)">Code livreur :</p>
-                                            <span class="text-sm font-black px-3 py-1 rounded-lg"
-                                                style="background: rgba(244,164,41,0.2); color: #F4A429; border: 1px solid rgba(244,164,41,0.3); letter-spacing: 0.1em">
-                                                {{ $order->delivery_code }}
-                                            </span>
-                                        </div>
-                                    @endif
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    <div id="buyer-orders-table">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr style="border-bottom:1px solid rgba(244,164,41,0.2)">
+                                    <th class="pb-3 text-center" style="color:rgba(244,164,41,0.7)">#</th>
+                                    <th class="pb-3 text-center" style="color:rgba(244,164,41,0.7)">Montant</th>
+                                    <th class="pb-3 text-center" style="color:rgba(244,164,41,0.7)">Statut</th>
+                                    <th class="pb-3 text-center" style="color:rgba(244,164,41,0.7)">Date</th>
+                                    <th class="pb-3 text-center" style="color:rgba(244,164,41,0.7)">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($orders as $order)
+                                <tr style="border-bottom:1px solid rgba(244,164,41,0.1)">
+                                    <td class="py-3 text-center" style="color:rgba(253,246,236,0.5)">#{{ $order->id }}</td>
+                                    <td class="py-3 text-center" style="color:#F4A429">
+                                        {{ number_format($order->total_price, 0, ',', ' ') }} Ar
+                                    </td>
+                                    <td class="py-3 text-center">
+                                        @php
+                                            $labels = [
+                                                'en_attente_paiement' => ['En attente',       'rgba(156,163,175,0.15)', '#9ca3af', 'rgba(156,163,175,0.3)'],
+                                                'paye_retenu'         => ['Payé 🔒',           'rgba(96,165,250,0.15)',  '#60a5fa', 'rgba(96,165,250,0.3)'],
+                                                'accepte_vendeur'     => ['Acceptée ✅',       'rgba(167,139,250,0.15)', '#a78bfa', 'rgba(167,139,250,0.3)'],
+                                                'livraison_en_cours'  => ['En livraison 🚚',   'rgba(250,204,21,0.15)',  '#facc15', 'rgba(250,204,21,0.3)'],
+                                                'confirme_acheteur'   => ['Confirmé 📦',       'rgba(192,132,252,0.15)', '#c084fc', 'rgba(192,132,252,0.3)'],
+                                                'termine'             => ['Terminé 💚',        'rgba(74,222,128,0.15)',  '#4ade80', 'rgba(74,222,128,0.3)'],
+                                                'annule'              => ['Annulé',            'rgba(239,68,68,0.15)',   '#f87171', 'rgba(239,68,68,0.3)'],
+                                                'litige'              => ['Litige ⚠️',         'rgba(239,68,68,0.2)',    '#fca5a5', 'rgba(239,68,68,0.4)'],
+                                            ];
+                                            [$label, $bg, $color, $border] = $labels[$order->status] ?? [$order->status,'rgba(255,255,255,0.1)','rgba(253,246,236,0.5)','rgba(255,255,255,0.2)'];
+                                        @endphp
+                                        <span style="padding:0.2rem 0.6rem; border-radius:9999px; font-size:0.7rem;
+                                                     background:{{ $bg }}; color:{{ $color }}; border:1px solid {{ $border }}">
+                                            {{ $label }}
+                                        </span>
+                                    </td>
+                                    <td class="py-3 text-center" style="color:rgba(253,246,236,0.5)">
+                                        {{ $order->created_at->format('d/m/Y') }}
+                                    </td>
+                                    <td class="py-3 text-center">
+                                        @if($order->status === 'livraison_en_cours')
+                                            <form method="POST" action="{{ route('order.confirm', $order->id) }}">
+                                                @csrf
+                                                <button type="submit"
+                                                        style="font-size:0.7rem; padding:0.3rem 0.75rem; border-radius:0.5rem;
+                                                               cursor:pointer; background:rgba(74,222,128,0.15);
+                                                               color:#4ade80; border:1px solid rgba(74,222,128,0.3)">
+                                                    ✅ Confirmer réception
+                                                </button>
+                                            </form>
+                                        @elseif($order->status === 'confirme_acheteur' && $order->delivery_code)
+                                            <div style="text-align:center;">
+                                                <p style="font-size:0.7rem; color:rgba(253,246,236,0.5); margin-bottom:0.25rem;">
+                                                    Code livreur :
+                                                </p>
+                                                <span style="font-size:0.875rem; font-weight:900; padding:0.3rem 0.75rem;
+                                                             border-radius:0.5rem; letter-spacing:0.1em;
+                                                             background:rgba(244,164,41,0.2); color:#F4A429;
+                                                             border:1px solid rgba(244,164,41,0.3)">
+                                                    {{ $order->delivery_code }}
+                                                </span>
+                                            </div>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 @endif
             </div>
-
         </div>
     </div>
+    <style>
+        #buyer-orders-table { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+        #buyer-orders-table table { min-width:550px; }
+    </style>
 </x-app-layout>

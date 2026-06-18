@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="py-12">
-        <div class="max-w-5xl mx-auto px-6 space-y-6">
+        <div style="max-width:64rem; margin:0 auto; padding:0 1.5rem; display:flex; flex-direction:column; gap:1.5rem;">
 
             {{-- En-tête --}}
             <div class="text-center mb-8">
@@ -13,7 +13,7 @@
             </div>
 
             {{-- Statistiques globales --}}
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+            <div id = "admin-stats" class = "grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
                 <div class="p-6 rounded-2xl" style="background: rgba(44,26,14,0.85); border: 1px solid rgba(244,164,41,0.3)">
                     <div class="text-4xl font-black" style="color: #F4A429">
                         {{ \App\Models\User::count() }}
@@ -64,38 +64,40 @@
                         ✅ Aucun produit en attente.
                     </p>
                 @else
-                    <table class="w-full text-sm">
-                        <thead>
-                            <tr style="border-bottom: 1px solid rgba(244,164,41,0.2)">
-                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Produit</th>
-                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Vendeur</th>
-                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Prix</th>
-                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Date</th>
-                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($pendingProducts as $product)
-                            <tr style="border-bottom: 1px solid rgba(244,164,41,0.1)">
-                                <td class="py-3 text-center font-medium" style="color: #FDF6EC">{{ $product->name }}</td>
-                                <td class="py-3 text-center" style="color: rgba(253,246,236,0.7)">{{ $product->user->name }}</td>
-                                <td class="py-3 text-center" style="color: #F4A429">{{ number_format($product->price, 0, ',', ' ') }} Ar</td>
-                                <td class="py-3 text-center" style="color: rgba(253,246,236,0.5)">{{ $product->created_at->format('d/m/Y') }}</td>
-                                <td class="py-3 text-center">
-                                    {{-- Bouton valider le produit --}}
-                                    <form method="POST" action="{{ route('admin.product.approve', $product->id) }}">
-                                        @csrf
-                                        <button type="submit"
-                                            class="text-xs px-3 py-1 rounded-lg font-medium"
-                                            style="background: rgba(34,197,94,0.2); color: #4ade80; border: 1px solid rgba(34,197,94,0.3)">
-                                            ✅ Valider
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    <div id="admin-pending-table">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr style="border-bottom: 1px solid rgba(244,164,41,0.2)">
+                                    <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Produit</th>
+                                    <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Vendeur</th>
+                                    <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Prix</th>
+                                    <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Date</th>
+                                    <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($pendingProducts as $product)
+                                <tr style="border-bottom: 1px solid rgba(244,164,41,0.1)">
+                                    <td class="py-3 text-center font-medium" style="color: #FDF6EC">{{ $product->name }}</td>
+                                    <td class="py-3 text-center" style="color: rgba(253,246,236,0.7)">{{ $product->user->name }}</td>
+                                    <td class="py-3 text-center" style="color: #F4A429">{{ number_format($product->price, 0, ',', ' ') }} Ar</td>
+                                    <td class="py-3 text-center" style="color: rgba(253,246,236,0.5)">{{ $product->created_at->format('d/m/Y') }}</td>
+                                    <td class="py-3 text-center">
+                                        {{-- Bouton valider le produit --}}
+                                        <form method="POST" action="{{ route('admin.product.approve', $product->id) }}">
+                                            @csrf
+                                            <button type="submit"
+                                                class="text-xs px-3 py-1 rounded-lg font-medium"
+                                                style="background: rgba(34,197,94,0.2); color: #4ade80; border: 1px solid rgba(34,197,94,0.3)">
+                                                ✅ Valider
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>    
                 @endif
             </div>
 
@@ -114,49 +116,52 @@
                         ✅ Aucun compte en attente.
                     </p>
                 @else
-                    <table class="w-full text-sm">
-                        <thead>
-                            <tr style="border-bottom: 1px solid rgba(244,164,41,0.2)">
-                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Nom</th>
-                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Email</th>
-                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Rôle</th>
-                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($pendingUsers as $user)
-                            <tr style="border-bottom: 1px solid rgba(244,164,41,0.1)">
-                                <td class="py-3 text-center" style="color: #FDF6EC">{{ $user->name }}</td>
-                                <td class="py-3 text-center" style="color: rgba(253,246,236,0.7)">{{ $user->email }}</td>
-                                <td class="py-3 text-center">
-                                    <span class="px-2 py-1 rounded-full text-xs bg-yellow-500/20 text-yellow-400">
-                                        {{ $user->role }}
-                                    </span>
-                                </td>
-                                <td class="py-3 text-center">
-                                    <form method="POST" action="{{ route('admin.user.approve', $user->id) }}"
-                                        class="inline">
-                                        @csrf
-                                        <button type="submit"
-                                                class="text-xs px-3 py-1 rounded-lg mr-2"
-                                                style="background: rgba(34,197,94,0.2); color: #4ade80; border: 1px solid rgba(34,197,94,0.3)">
-                                            ✅ Approuver
-                                        </button>
-                                    </form>
-                                    <form method="POST" action="{{ route('admin.user.reject', $user->id) }}"
-                                        class="inline">
-                                        @csrf
-                                        <button type="submit"
-                                                class="text-xs px-3 py-1 rounded-lg"
-                                                style="background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.3)">
-                                            ❌ Rejeter
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    <div id="admin-users-table">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr style="border-bottom: 1px solid rgba(244,164,41,0.2)">
+                                    <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Nom</th>
+                                    <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Email</th>
+                                    <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Rôle</th>
+                                    <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($pendingUsers as $user)
+                                <tr style="border-bottom: 1px solid rgba(244,164,41,0.1)">
+                                    <td class="py-3 text-center" style="color: #FDF6EC">{{ $user->name }}</td>
+                                    <td class="py-3 text-center" style="color: rgba(253,246,236,0.7)">{{ $user->email }}</td>
+                                    <td class="py-3 text-center">
+                                        <span style="padding:0.2rem 0.6rem; border-radius:9999px; font-size:0.7rem;
+                                                background:rgba(250,204,21,0.15); color:#facc15; border:1px solid rgba(250,204,21,0.3)">
+                                            {{ $user->role }}
+                                        </span>
+                                    </td>
+                                    <td class="py-3 text-center">
+                                        <form method="POST" action="{{ route('admin.user.approve', $user->id) }}"
+                                            class="inline">
+                                            @csrf
+                                            <button type="submit"
+                                                    class="text-xs px-3 py-1 rounded-lg mr-2"
+                                                    style="background: rgba(34,197,94,0.2); color: #4ade80; border: 1px solid rgba(34,197,94,0.3)">
+                                                ✅ Approuver
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ route('admin.user.reject', $user->id) }}"
+                                            class="inline">
+                                            @csrf
+                                            <button type="submit"
+                                                    class="text-xs px-3 py-1 rounded-lg"
+                                                    style="background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.3)">
+                                                ❌ Rejeter
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 @endif
             </div>
 
@@ -168,41 +173,70 @@
                 @php
                     $newUsers = \App\Models\User::latest()->take(5)->get();
                 @endphp
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr style="border-bottom: 1px solid rgba(244,164,41,0.2)">
-                            <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Nom</th>
-                            <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Email</th>
-                            <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Rôle</th>
-                            <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Inscrit le</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($newUsers as $user)
-                        <tr style="border-bottom: 1px solid rgba(244,164,41,0.1)">
-                            <td class="py-3 text-center font-medium" style="color: #FDF6EC">{{ $user->name }}</td>
-                            <td class="py-3 text-center" style="color: rgba(253,246,236,0.7)">{{ $user->email }}</td>
-                            <td class="py-3 text-center">
-                                @php
-                                    $roles = [
-                                        'admin'           => ['Admin', 'bg-red-500/20 text-red-400'],
-                                        'vendeur_pro'     => ['Entreprise', 'bg-green-500/20 text-green-400'],
-                                        'vendeur_amateur' => ['Particulier', 'bg-yellow-500/20 text-yellow-400'],
-                                        'acheteur'        => ['Acheteur', 'bg-blue-500/20 text-blue-400'],
-                                    ];
-                                    [$roleLabel, $roleBadge] = $roles[$user->role] ?? [$user->role, 'bg-gray-500/20 text-gray-400'];
-                                @endphp
-                                <span class="px-2 py-1 rounded-full text-xs {{ $roleBadge }}">{{ $roleLabel }}</span>
-                            </td>
-                            <td class="py-3 text-center" style="color: rgba(253,246,236,0.5)">
-                                {{ $user->created_at->format('d/m/Y') }}
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr style="border-bottom: 1px solid rgba(244,164,41,0.2)">
+                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Nom</th>
+                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Email</th>
+                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Rôle</th>
+                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Inscrit le</th>
+                                <th class="pb-3 text-center" style="color: rgba(244,164,41,0.7)">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($newUsers as $user)
+                            <tr style="border-bottom: 1px solid rgba(244,164,41,0.1)">
+                                <td class="py-3 text-center font-medium" style="color: #FDF6EC">{{ $user->name }}</td>
+                                <td class="py-3 text-center" style="color: rgba(253,246,236,0.7)">{{ $user->email }}</td>
+                                <td class="py-3 text-center">
+                                    @php
+                                        $roles = [
+                                            'admin'           => ['Admin',      'rgba(239,68,68,0.15)',   '#f87171', 'rgba(239,68,68,0.3)'],
+                                            'vendeur_pro'     => ['Entreprise', 'rgba(74,222,128,0.15)',  '#4ade80', 'rgba(74,222,128,0.3)'],
+                                            'vendeur_amateur' => ['Particulier','rgba(250,204,21,0.15)',  '#facc15', 'rgba(250,204,21,0.3)'],
+                                            'acheteur'        => ['Acheteur',   'rgba(96,165,250,0.15)',  '#60a5fa', 'rgba(96,165,250,0.3)'],
+                                        ];
+                                        [$roleLabel, $rbg, $rc, $rbd] = $roles[$user->role] ?? [$user->role,'rgba(255,255,255,0.1)','rgba(253,246,236,0.5)','rgba(255,255,255,0.2)'];
+                                    @endphp
+                                    <span style="padding:0.2rem 0.6rem; border-radius:9999px; font-size:0.7rem;
+                                                background:{{ $rbg }}; color:{{ $rc }}; border:1px solid {{ $rbd }}">
+                                        {{ $roleLabel }}
+                                    </span>
+                                </td>
+                                <td class="py-3 text-center" style="color: rgba(253,246,236,0.5)">
+                                    {{ $user->created_at->format('d/m/Y') }}
+                                </td>
+                                <td class="py-3 text-center">
+                                    @if($user->role !== 'admin')
+                                        <form method="POST" action="{{ route('admin.user.delete', $user->id) }}"
+                                            onsubmit="return confirm('Supprimer définitivement ce compte ?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-xs px-3 py-1 rounded-lg"
+                                                    style="background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3)">
+                                                🗑️ Supprimer
+                                            </button>
+                                        </form>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
-
         </div>
     </div>
+    <style>
+        #admin-stats { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; }
+        #admin-pending-table, #admin-users-table, #admin-pending-accounts { overflow-x: auto; }
+        #admin-pending-table table, #admin-users-table table, #admin-pending-accounts table { min-width: 500px; }
+        @media (max-width: 900px) {
+            #admin-stats { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (max-width: 480px) {
+            #admin-stats { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+    </style>
 </x-app-layout>

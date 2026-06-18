@@ -5,13 +5,13 @@
 ])
 
 @php
-$maxWidth = [
-    'sm' => 'sm:max-w-sm',
-    'md' => 'sm:max-w-md',
-    'lg' => 'sm:max-w-lg',
-    'xl' => 'sm:max-w-xl',
-    '2xl' => 'sm:max-w-2xl',
-][$maxWidth];
+$maxWidthStyles = [
+    'sm'  => 'max-width:24rem',
+    'md'  => 'max-width:28rem',
+    'lg'  => 'max-width:32rem',
+    'xl'  => 'max-width:36rem',
+    '2xl' => 'max-width:42rem',
+][$maxWidth] ?? 'max-width:42rem';
 @endphp
 
 <div
@@ -65,7 +65,8 @@ $maxWidth = [
 
     <div
         x-show="show"
-        class="mb-6 bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:w-full {{ $maxWidth }} sm:mx-auto"
+        class="mb-6 bg-white rounded-lg overflow-hidden shadow-xl transform transition-all"
+        style="width:calc(100% - 2rem); {{ $maxWidthStyles }}; margin-left:auto; margin-right:auto;"
         x-transition:enter="ease-out duration-300"
         x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
         x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"

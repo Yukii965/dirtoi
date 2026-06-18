@@ -97,4 +97,18 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    // Relation vers la personnalisation de boutique
+    public function shopCustomization()
+    {
+        return $this->hasOne(\App\Models\ShopCustomization::class, 'vendor_id');
+    }
+
+    // Vérifie si le vendeur a un abonnement premium actif
+    public function hasPremium(): bool
+    {
+        return $this->subscriptions()
+            ->where('status', 'actif')
+            ->where('end_date', '>=', today())
+            ->exists();
+    }
 }

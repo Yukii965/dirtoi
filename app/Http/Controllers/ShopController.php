@@ -66,12 +66,12 @@ class ShopController extends Controller
         $sellerCategories = Category::query()
             ->whereHas('products', function ($q) use ($vendor) {
                 $q->where('user_id', $vendor->id)
-                  ->where('product_status', 'actif');
+                ->where('product_status', 'actif');
             })
             ->withCount([
                 'products as products_count' => function ($q) use ($vendor) {
                     $q->where('user_id', $vendor->id)
-                      ->where('product_status', 'actif');
+                    ->where('product_status', 'actif');
                 }
             ])
             ->orderByDesc('products_count')
@@ -98,20 +98,46 @@ class ShopController extends Controller
             $productsQuery->where('name', 'like', "%{$request->search}%");
         }
 
-        // Tri
-        match ($request->sort) {
-            'price_asc'  => $productsQuery->orderBy('price', 'asc'),
-            'price_desc' => $productsQuery->orderBy('price', 'desc'),
-            default      => $productsQuery->latest(),
-        };
+        // -------------------------------------------------------
+        // ORDRE : personnalisé par le vendeur ou filtre acheteur
+        // -------------------------------------------------------
+        $customization = $vendor->shopCustomization;
+        $rawOrder     = $customization?->product_order;
+        $productOrder = is_array($rawOrder)
+            ? $rawOrder
+            : (json_decode((string) $rawOrder, true) ?? []);
+
+        if (!empty($productOrder) && !$request->filled('sort')) {
+            // L'acheteur n'a pas demandé de tri explicite ET
+            // le vendeur a défini un ordre personnalisé → on l'applique
+            $safeIds = implode(',', array_map('intval', $productOrder));
+            $productsQuery->orderByRaw("FIELD(id, {$safeIds}) ASC, created_at DESC");
+        } else {
+            // Tri demandé par l'acheteur (ou aucun ordre personnalisé)
+            match ($request->sort) {
+                'price_asc'  => $productsQuery->orderBy('price', 'asc'),
+                'price_desc' => $productsQuery->orderBy('price', 'desc'),
+                default      => $productsQuery->latest(),
+            };
+        }
 
         $products = $productsQuery->paginate(12)->withQueryString();
+        // Données d'édition pour le propriétaire
+        $isOwner      = auth()->check() && auth()->id() === $vendor->id;
+        $isPremium    = $isOwner && $vendor->hasPremium();
+        $customization = \App\Models\ShopCustomization::firstOrCreate(
+            ['vendor_id' => $vendor->id],
+            ['primary_color' => '#F4A429']
+        );
 
         return view('products.vendor-shop', [
             'seller'           => $vendor,
             'sellerCategories' => $sellerCategories,
             'products'         => $products,
             'totalProducts'    => $totalProducts,
+            'isOwner'          => $isOwner,
+            'isPremium'        => $isPremium,
+            'customization'    => $customization,
         ]);
     }
 }

@@ -27,18 +27,7 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
 
-        $user = Auth::user();
-
-        // Redirection selon le rôle
-        if ($user->isAdmin()) {
-            return redirect()->route('dashboard');
-        }
-
-        if ($user->isVendeur()) {
-            return redirect()->route('dashboard');
-        }
-
-        // Acheteur → page d'accueil
+        // Tout le monde va vers l'accueil après connexion
         return redirect()->route('home');
     }
 

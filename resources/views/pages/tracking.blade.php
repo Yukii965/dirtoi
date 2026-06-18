@@ -18,7 +18,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div id="tracking-grid" class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
                 {{-- Panneau statut --}}
                 <div class="lg:col-span-1 space-y-4">
@@ -89,7 +89,7 @@
                 {{-- Carte --}}
                 <div class="lg:col-span-3">
                     <div id="map" class="rounded-2xl overflow-hidden"
-                         style="height: 500px; border: 1px solid rgba(244,164,41,0.2)"></div>
+                         style="height: clamp(280px, 60vw, 500px); border: 1px solid rgba(244,164,41,0.2)"></div>
                 </div>
 
             </div>
@@ -160,4 +160,23 @@
             map.fitBounds(path.getBounds(), {padding: [60, 60]});
         });
     </script>
+    <style>
+        /* On force 1 seule colonne quelle que soit la taille,
+        l'ID a une spécificité plus forte que .lg\:grid-cols-4
+        donc il prend le dessus sur la règle globale buggée */
+        #tracking-grid {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem !important;
+        }
+
+        /* À partir de 1024px (vrai breakpoint desktop) :
+        panneau statut + carte côte à côte */
+        @media (min-width: 1024px) {
+            #tracking-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 2rem !important;
+            }
+        }
+    </style>
 </x-app-layout>

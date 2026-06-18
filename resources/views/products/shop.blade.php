@@ -3,173 +3,140 @@
         <div class="max-w-7xl mx-auto px-6">
 
             {{-- En-tête --}}
-            <div class="mb-10">
-                <h1 class="text-3xl font-black"
-                    style="font-family: 'Playfair Display', serif; color: #F4A429">
-                    🏪 Marketplace
+            <div class="mb-8">
+                <h1 class="text-2xl font-black" style="font-family:'Playfair Display',serif; color:#F4A429">
+                    🏪 Boutiques GasyMarket
                 </h1>
-                <p class="mt-1 text-sm" style="color: rgba(253,246,236,0.5)">
-                    {{ $sellers->total() }} boutiques disponibles
+                <p class="text-sm mt-1" style="color: rgba(253,246,236,0.5)">
+                    {{ $sellers->total() }} boutique(s) disponible(s)
                 </p>
             </div>
 
-            {{-- Barre de recherche vendeur --}}
-            <form method="GET" action="{{ route('products.index') }}" class="mb-8">
-                <div class="flex gap-3">
-                    <input type="text" name="search"
-                           value="{{ request('search') }}"
-                           placeholder="Rechercher une boutique ou un vendeur..."
-                           class="flex-1 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2"
-                           style="background: rgba(44,26,14,0.85);
-                                  border: 1px solid rgba(244,164,41,0.3);
-                                  color: #FDF6EC;
-                                  focus-ring-color: #F4A429">
-                    <button type="submit"
-                            class="px-6 py-3 rounded-xl font-bold text-sm"
-                            style="background: #F4A429; color: #2C1A0E">
-                        🔍 Rechercher
-                    </button>
-                    @if(request('search'))
-                        <a href="{{ route('products.index') }}"
-                           class="px-4 py-3 rounded-xl text-sm flex items-center"
-                           style="background: rgba(44,26,14,0.85);
-                                  border: 1px solid rgba(244,164,41,0.2);
-                                  color: rgba(253,246,236,0.5)">
-                            ✕
-                        </a>
-                    @endif
-                </div>
-            </form>
+            <div id="shop-layout" style="display:flex; gap:1.5rem; align-items:flex-start;">
 
-            {{-- Filtres par type de vendeur --}}
-            <div class="flex gap-3 mb-8 flex-wrap">
-                <a href="{{ route('products.index') }}"
-                   class="px-4 py-2 rounded-full text-sm font-semibold transition"
-                   style="background: {{ !request('type') ? '#F4A429' : 'rgba(44,26,14,0.85)' }};
-                          color: {{ !request('type') ? '#2C1A0E' : 'rgba(253,246,236,0.7)' }};
-                          border: 1px solid rgba(244,164,41,0.3)">
-                    Tous les vendeurs
-                </a>
-                <a href="{{ route('products.index', ['type' => 'vendeur_pro']) }}"
-                   class="px-4 py-2 rounded-full text-sm font-semibold transition"
-                   style="background: {{ request('type') === 'vendeur_pro' ? '#F4A429' : 'rgba(44,26,14,0.85)' }};
-                          color: {{ request('type') === 'vendeur_pro' ? '#2C1A0E' : 'rgba(253,246,236,0.7)' }};
-                          border: 1px solid rgba(244,164,41,0.3)">
-                    🏢 Entreprises Pro
-                </a>
-                <a href="{{ route('products.index', ['type' => 'vendeur_amateur']) }}"
-                   class="px-4 py-2 rounded-full text-sm font-semibold transition"
-                   style="background: {{ request('type') === 'vendeur_amateur' ? '#F4A429' : 'rgba(44,26,14,0.85)' }};
-                          color: {{ request('type') === 'vendeur_amateur' ? '#2C1A0E' : 'rgba(253,246,236,0.7)' }};
-                          border: 1px solid rgba(244,164,41,0.3)">
-                    👤 Vendeurs Particuliers
-                </a>
-            </div>
+                {{-- Sidebar filtres --}}
+                <div id="shop-sidebar" style="width:260px; flex-shrink:0;">
+                    <form method="GET" action="{{ route('products.index') }}" class="space-y-4">
 
-            {{-- Grille des vendeurs --}}
-            @if($sellers->isEmpty())
-                <div class="text-center py-20 rounded-2xl"
-                     style="background: rgba(44,26,14,0.5);
-                            border: 2px dashed rgba(244,164,41,0.2)">
-                    <div class="text-6xl mb-4">🔍</div>
-                    <p style="color: rgba(253,246,236,0.5)">
-                        Aucune boutique trouvée.
-                    </p>
-                </div>
-            @else
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach($sellers as $seller)
-                        <a href="{{ route('shop.vendor', $seller->id) }}"
-                           class="group block rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
-                           style="background: rgba(44,26,14,0.85);
-                                  border: 1px solid rgba(244,164,41,0.2);
-                                  box-shadow: 0 4px 20px rgba(0,0,0,0.3)">
+                        {{-- Recherche --}}
+                        <div class="p-5 rounded-2xl" style="background: rgba(44,26,14,0.85); border: 1px solid rgba(244,164,41,0.2)">
+                            <h3 class="text-xs font-bold uppercase mb-3" style="color: rgba(244,164,41,0.8)">Recherche</h3>
+                            <input type="text" name="search" value="{{ request('search') }}"
+                                   placeholder="Nom de la boutique..."
+                                   class="w-full rounded-xl px-3 py-2 text-sm focus:outline-none"
+                                   style="background: rgba(255,255,255,0.08); border: 1px solid rgba(244,164,41,0.2); color: #FDF6EC">
+                        </div>
 
-                            {{-- Bannière / Avatar --}}
-                            <div class="relative h-32 flex items-center justify-center"
-                                 style="background: linear-gradient(135deg, rgba(244,164,41,0.15), rgba(44,26,14,0.9))">
-
-                                {{-- Badge type vendeur --}}
-                                <span class="absolute top-3 right-3 text-xs font-bold px-2 py-1 rounded-full"
-                                      style="background: {{ $seller->role === 'vendeur_pro' ? 'rgba(244,164,41,0.9)' : 'rgba(96,165,250,0.9)' }};
-                                             color: #2C1A0E">
-                                    {{ $seller->role === 'vendeur_pro' ? '🏢 Pro' : '👤 Amateur' }}
-                                </span>
-
-                                {{-- Avatar initiales --}}
-                                <div class="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-black border-4 transition-transform duration-300 group-hover:scale-110"
-                                     style="background: rgba(244,164,41,0.2);
-                                            border-color: rgba(244,164,41,0.4);
-                                            color: #F4A429">
-                                    @if($seller->avatar)
-                                        <img src="{{ asset('storage/' . $seller->avatar) }}"
-                                             class="w-full h-full object-cover rounded-full"
-                                             alt="{{ $seller->name }}">
-                                    @else
-                                        {{ strtoupper(substr($seller->company_name ?? $seller->name, 0, 1)) }}
-                                    @endif
-                                </div>
+                        {{-- Type de vendeur --}}
+                        <div class="p-5 rounded-2xl" style="background: rgba(44,26,14,0.85); border: 1px solid rgba(244,164,41,0.2)">
+                            <h3 class="text-xs font-bold uppercase mb-3" style="color: rgba(244,164,41,0.8)">Type de vendeur</h3>
+                            <div class="space-y-1">
+                                <a href="{{ route('products.index', array_filter(['search' => request('search')])) }}"
+                                   class="block text-sm px-3 py-2 rounded-lg transition"
+                                   style="color: {{ !request('type') ? '#F4A429' : 'rgba(253,246,236,0.6)' }};
+                                          background: {{ !request('type') ? 'rgba(244,164,41,0.15)' : 'transparent' }}">
+                                    Tous les vendeurs
+                                </a>
+                                <a href="{{ route('products.index', array_filter(['search' => request('search'), 'type' => 'vendeur_pro'])) }}"
+                                   class="block text-sm px-3 py-2 rounded-lg transition"
+                                   style="color: {{ request('type') == 'vendeur_pro' ? '#F4A429' : 'rgba(253,246,236,0.6)' }};
+                                          background: {{ request('type') == 'vendeur_pro' ? 'rgba(244,164,41,0.15)' : 'transparent' }}">
+                                    🏢 Entreprises
+                                </a>
+                                <a href="{{ route('products.index', array_filter(['search' => request('search'), 'type' => 'vendeur_amateur'])) }}"
+                                   class="block text-sm px-3 py-2 rounded-lg transition"
+                                   style="color: {{ request('type') == 'vendeur_amateur' ? '#F4A429' : 'rgba(253,246,236,0.6)' }};
+                                          background: {{ request('type') == 'vendeur_amateur' ? 'rgba(244,164,41,0.15)' : 'transparent' }}">
+                                    👤 Particuliers
+                                </a>
                             </div>
+                        </div>
 
-                            {{-- Infos vendeur --}}
-                            <div class="p-5">
-                                <h3 class="font-black text-lg leading-tight group-hover:text-yellow-400 transition"
-                                    style="color: #FDF6EC; font-family: 'Playfair Display', serif">
-                                    {{ $seller->company_name ?? $seller->name }}
-                                </h3>
+                        <button type="submit" class="w-full py-3 rounded-xl font-bold text-sm" style="background:#F4A429; color:#2C1A0E">
+                            🔍 Filtrer
+                        </button>
 
-                                @if($seller->company_name)
-                                    <p class="text-xs mt-0.5" style="color: rgba(253,246,236,0.45)">
-                                        {{ $seller->name }}
-                                    </p>
-                                @endif
+                        @if(request('search') || request('type'))
+                            <a href="{{ route('products.index') }}" class="block text-center text-sm py-2" style="color: rgba(253,246,236,0.4)">
+                                ✕ Réinitialiser
+                            </a>
+                        @endif
+                    </form>
+                </div>
 
-                                {{-- Stats --}}
-                                <div class="flex items-center gap-4 mt-4">
-                                    <div class="text-center">
-                                        <p class="text-lg font-black" style="color: #F4A429">
-                                            {{ $seller->products_count ?? 0 }}
-                                        </p>
-                                        <p class="text-xs" style="color: rgba(253,246,236,0.4)">
-                                            produits
-                                        </p>
+                {{-- Grille des boutiques --}}
+                <div style="flex:1; min-width:0;">
+                    @if($sellers->isEmpty())
+                        <div class="text-center py-20 rounded-2xl" style="background: rgba(44,26,14,0.5); border: 2px dashed rgba(244,164,41,0.2)">
+                            <div class="text-6xl mb-4">🔍</div>
+                            <p style="color: rgba(253,246,236,0.5)">Aucune boutique trouvée.</p>
+                        </div>
+                    @else
+                        {{-- #shops-grid : 1 colonne mobile, 2 en tablette, 3 en desktop
+                             (géré ici via ID pour éviter les surcharges globales sur .lg\:grid-cols-X) --}}
+                        <div id="shops-grid">
+                            @foreach($sellers as $seller)
+                                <a href="{{ route('shop.vendor', $seller->id) }}" class="gasy-card block p-5">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black shrink-0"
+                                             style="background: rgba(244,164,41,0.15); border: 2px solid rgba(244,164,41,0.4); color:#F4A429">
+                                            @if($seller->avatar)
+                                                <img src="{{ asset('storage/' . $seller->avatar) }}" class="w-full h-full object-cover rounded-2xl" alt="{{ $seller->name }}">
+                                            @else
+                                                {{ strtoupper(substr($seller->company_name ?? $seller->name, 0, 1)) }}
+                                            @endif
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <h3 class="font-bold truncate" style="color:#FDF6EC">
+                                                {{ $seller->company_name ?? $seller->name }}
+                                            </h3>
+                                            <span class="text-xs font-bold px-2 py-0.5 rounded-full inline-block mt-1"
+                                                  style="background: {{ $seller->role === 'vendeur_pro' ? 'rgba(244,164,41,0.9)' : 'rgba(96,165,250,0.9)' }}; color:#2C1A0E">
+                                                {{ $seller->role === 'vendeur_pro' ? '🏢 Entreprise' : '👤 Particulier' }}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div class="h-8 w-px" style="background: rgba(244,164,41,0.2)"></div>
-                                    <div class="text-center">
-                                        <p class="text-lg font-black" style="color: #F4A429">
-                                            {{ $seller->categories_count ?? 0 }}
-                                        </p>
-                                        <p class="text-xs" style="color: rgba(253,246,236,0.4)">
-                                            catégories
-                                        </p>
-                                    </div>
-                                    <div class="flex-1 flex justify-end">
-                                        <span class="text-xs px-2 py-1 rounded-full"
-                                              style="background: rgba(34,197,94,0.15); color: #4ade80">
-                                            ● Actif
+                                    <div class="flex items-center justify-between mt-4 pt-4" style="border-top: 1px solid rgba(244,164,41,0.1)">
+                                        <span class="text-sm" style="color: rgba(253,246,236,0.6)">
+                                            {{ $seller->products_count }} produit(s)
+                                        </span>
+                                        <span class="text-xs font-bold" style="color:#F4A429">
+                                            Voir la boutique →
                                         </span>
                                     </div>
-                                </div>
+                                </a>
+                            @endforeach
+                        </div>
 
-                                {{-- CTA --}}
-                                <div class="mt-4 pt-4 flex items-center justify-between"
-                                     style="border-top: 1px solid rgba(244,164,41,0.1)">
-                                    <span class="text-xs" style="color: rgba(253,246,236,0.4)">
-                                        Voir la boutique
-                                    </span>
-                                    <span style="color: #F4A429">→</span>
-                                </div>
-                            </div>
-                        </a>
-                    @endforeach
+                        <div class="mt-8">
+                            {{ $sellers->links() }}
+                        </div>
+                    @endif
                 </div>
-
-                {{-- Pagination --}}
-                <div class="mt-8">
-                    {{ $sellers->links() }}
-                </div>
-            @endif
-
+            </div>
         </div>
     </div>
+
+    <style>
+        /* #shops-grid : 3 colonnes par défaut sur desktop */
+        #shops-grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 1.25rem !important;
+        }
+
+        @media (max-width: 1024px) {
+            /* Sidebar passe au-dessus, en pleine largeur */
+            #shop-layout  { flex-direction: column !important; }
+            #shop-sidebar { width: 100% !important; }
+
+            /* 2 colonnes en tablette */
+            #shops-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+
+        @media (max-width: 640px) {
+            /* 1 colonne en mobile */
+            #shops-grid { grid-template-columns: 1fr !important; }
+        }
+    </style>
 </x-app-layout>

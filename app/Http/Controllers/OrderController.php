@@ -171,4 +171,40 @@ class OrderController extends Controller
 
         return back()->with('success', 'Livraison validée ! Le vendeur va recevoir son paiement.');
     }
+    // Le vendeur accepte la commande (confirme qu'il l'a bien reçue)
+    public function acceptOrder(Order $order)
+    {
+        // Vérifie que c'est bien un produit de ce vendeur
+        $isVendor = $order->items()->whereHas('product', function ($q) {
+            $q->where('user_id', Auth::id());
+        })->exists();
+
+        if (!$isVendor) abort(403);
+
+        if ($order->status !== 'paye_retenu') {
+            return back()->with('error', 'Cette commande ne peut pas être acceptée.');
+        }
+
+        $order->update(['status' => 'accepte_vendeur']);
+
+        return back()->with('success', '✅ Commande acceptée ! Préparez le colis.');
+    }
+
+    // Le vendeur confirme que le colis est parti en livraison
+    public function startDelivery(Order $order)
+    {
+        $isVendor = $order->items()->whereHas('product', function ($q) {
+            $q->where('user_id', Auth::id());
+        })->exists();
+
+        if (!$isVendor) abort(403);
+
+        if ($order->status !== 'accepte_vendeur') {
+            return back()->with('error', 'Veuillez d\'abord accepter la commande.');
+        }
+
+        $order->update(['status' => 'livraison_en_cours']);
+
+        return back()->with('success', '🚚 Livraison confirmée ! L\'acheteur a été notifié.');
+    }
 }
